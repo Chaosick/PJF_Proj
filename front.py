@@ -1,13 +1,30 @@
 from tkinter import *
-from tkinter.messagebox import showinfo
+from tkinter import ttk
 import json
 
 root = Tk()
 root.geometry('1000x500')
 root.title("Expenses Traker 9000")
 
+
 with open("expenses.json", "r") as file:
     dane = json.loads(file.read())
+
+cols = ('ID', 'Cena', 'Data','Opis')
+tabela = ttk.Treeview(root, columns=cols, show='headings')
+for col in cols:
+    tabela.heading(col, text=col)
+tabela.grid(row=4, column=0, columnspan=21)
+
+#data = [{'name': "Imie", 'surname': "Nazwisko"}, {'name': "Imie22", 'surname': "Nazwisko22"}] # lista obiektów
+keys = ['Price', 'Date', 'Description'] # klucze które chcesz
+
+#result = [el[key] for el in data for key in keys]
+
+#print(result)
+
+for i in dane:
+   tabela.insert("", "end", values=(i["ID"], i["Price"], i["Date"], i["Description"]))
 
 #Funkcje
 def addExpense():
@@ -32,7 +49,6 @@ def addExpense():
 
 def delExpense():
 
-    id = pole_id.get()
     with open("expenses.json", "r") as file:
         fdata = json.loads(file.read())
 
@@ -45,13 +61,10 @@ def delExpense():
 
 
 def findExpense():
-    with open("expenses.json", "r") as file:
-        fdata = json.loads(file.read())
+    pass
 
-    id = pole_id.get()
-    ile = cena.get()
-    kiedy = data.get()
-    co = opis.get()
+
+
 
 #Przyciski
 dodaj = Button(root, text="Dodaj",command = addExpense, padx=40,pady=20)
@@ -77,9 +90,6 @@ o.grid(row=1, column= 2)
 d = Label(root,text = "Data")
 d.grid(row=2, column= 2)
 
-tekst_id = Label(root, text="ID")
-tekst_id.grid(row = 3, column = 2)
-
 
 #Pola do wpisywania
 cena = Entry(root, width = 50)
@@ -90,9 +100,6 @@ data.grid(row=1, column= 3, padx=10,pady=10)
 
 opis = Entry(root, width = 50)
 opis.grid(row=2, column= 3, padx=10,pady=10)
-
-pole_id = Entry(root, width=50)
-pole_id.grid(row=3, column=3, padx=20, pady=10)
 
 
 root.mainloop()

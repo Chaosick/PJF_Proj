@@ -1,43 +1,27 @@
-import json
+import tkinter as tk
+from tkinter import ttk
 
-expenses = {
-    "ID": None,
-    "Price": None,
-    "Date": None,
-    "Description": None
-}
+def show():
 
-with open("expenses.json", "r") as file:
-    dane = json.loads(file.read())
+    tempList = [['Jim', '0.33'], ['Dave', '0.67'], ['James', '0.67'], ['Eden', '0.5']]
+    tempList.sort(key=lambda e: e[1], reverse=True)
 
-print(expenses)
+    for i, (name, score) in enumerate(tempList, start=1):
+        listBox.insert("", "end", values=(i, name, score))
 
-def editExpense(id):
+scores = tk.Tk()
+label = tk.Label(scores, text="High Scores", font=("Arial",30)).grid(row=0, columnspan=3)
+# create Treeview with 3 columns
+cols = ('Position', 'Name', 'Score')
+listBox = ttk.Treeview(scores, columns=cols, show='headings')
+# set column headings
+for col in cols:
+    listBox.heading(col, text=col)
+listBox.grid(row=1, column=0, columnspan=2)
 
-    with open("expenses.json", "r") as file:
-        fdata = json.loads(file.read())
+showScores = tk.Button(scores, text="Show scores", width=15, command=show).grid(row=4, column=0)
+closeButton = tk.Button(scores, text="Close", width=15, command=exit).grid(row=4, column=1)
 
-    for i in fdata:
-        if i['ID'] == id:
-        expenses = {
-            'ID': id,
-            'Price': cena.get(),
-            'Date': data.get(),
-            'Description': opis.get()
-        }
+scores.mainloop()
 
-    with open("expenses.json", "w") as file:
-        file.write(json.dumps(fdata))
 
-def okienko():
-    window = Toplevel()
-    window.geometry("200x80")
-
-    tekst_id = Label(window, text="Podaj ID: ").grid(row = 0, column = 0)
-    pole_id = Entry(window, width=10).grid(row=0, column=1, padx=20, pady=10)
-
-    zatwierdz = Button(window, text="Zatwierdz")
-    zatwierdz.grid(row=1, column=0, padx=10,pady=10)
-
-    koniec = Button(window, text="Zamknij", command = window.destroy)
-    koniec.grid(row=1, column=1, padx=10, pady=10)
