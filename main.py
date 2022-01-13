@@ -1,27 +1,31 @@
-import tkinter as tk
+from tkinter import *
 from tkinter import ttk
 
-def show():
+ws = Tk()
+ws.title("PythonGuides")
 
-    tempList = [['Jim', '0.33'], ['Dave', '0.67'], ['James', '0.67'], ['Eden', '0.5']]
-    tempList.sort(key=lambda e: e[1], reverse=True)
+tv = ttk.Treeview(ws, columns=(1, 2, 3), show='headings', height=8)
+tv.pack()
 
-    for i, (name, score) in enumerate(tempList, start=1):
-        listBox.insert("", "end", values=(i, name, score))
+tv.heading(1, text="name")
+tv.heading(2, text="eid")
+tv.heading(3, text="Salary")
 
-scores = tk.Tk()
-label = tk.Label(scores, text="High Scores", font=("Arial",30)).grid(row=0, columnspan=3)
-# create Treeview with 3 columns
-cols = ('Position', 'Name', 'Score')
-listBox = ttk.Treeview(scores, columns=cols, show='headings')
-# set column headings
-for col in cols:
-    listBox.heading(col, text=col)
-listBox.grid(row=1, column=0, columnspan=2)
+def update_item():
+    selected = tv.focus()
+    temp = tv.item(selected, 'values')
+    sal_up = float(temp[2]) + float(temp[2]) * 0.05
+    tv.item(selected, values=(temp[0], temp[1], sal_up))
 
-showScores = tk.Button(scores, text="Show scores", width=15, command=show).grid(row=4, column=0)
-closeButton = tk.Button(scores, text="Close", width=15, command=exit).grid(row=4, column=1)
+tv.insert(parent='', index=0, iid=0, values=("vineet", "e11", 1000000.00))
+tv.insert(parent='', index=1, iid=1, values=("anil", "e12", 120000.00))
+tv.insert(parent='', index=2, iid=2, values=("ankit", "e13", 41000.00))
+tv.insert(parent='', index=3, iid=3, values=("Shanti", "e14", 22000.00))
 
-scores.mainloop()
+Button(ws, text='Increment Salary', command=update_item).pack()
 
+style = ttk.Style()
+style.theme_use("default")
+style.map("Treeview")
 
+ws.mainloop()

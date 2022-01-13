@@ -6,26 +6,6 @@ root = Tk()
 root.geometry('1000x500')
 root.title("Expenses Traker 9000")
 
-
-with open("expenses.json", "r") as file:
-    dane = json.loads(file.read())
-
-cols = ('ID', 'Cena', 'Data','Opis')
-tabela = ttk.Treeview(root, columns=cols, show='headings')
-for col in cols:
-    tabela.heading(col, text=col)
-tabela.grid(row=4, column=0, columnspan=21)
-
-#data = [{'name': "Imie", 'surname': "Nazwisko"}, {'name': "Imie22", 'surname': "Nazwisko22"}] # lista obiektów
-keys = ['Price', 'Date', 'Description'] # klucze które chcesz
-
-#result = [el[key] for el in data for key in keys]
-
-#print(result)
-
-for i in dane:
-   tabela.insert("", "end", values=(i["ID"], i["Price"], i["Date"], i["Description"]))
-
 #Funkcje
 def addExpense():
 
@@ -36,7 +16,7 @@ def addExpense():
         fdata = []
 
     expenses = {
-        'ID': len(fdata),
+        'ID': len(fdata)+1,
         'Price': cena.get(),
         'Date': data.get(),
         'Description': opis.get()
@@ -63,7 +43,18 @@ def delExpense():
 def findExpense():
     pass
 
+with open("expenses.json", "r") as file:
+    dane = json.loads(file.read())
 
+cols = ('ID', 'Cena', 'Data','Opis')
+tabela = ttk.Treeview(root, columns=cols, show='headings')
+for col in cols:
+    tabela.heading(col, text=col)
+tabela.grid(row=4, column=0, columnspan=21)
+
+
+for i in dane:
+   tabela.insert("", "end", values=(i["ID"], i["Price"], i["Date"], i["Description"]))
 
 
 #Przyciski
