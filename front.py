@@ -27,34 +27,58 @@ def addExpense():
         file.write(json.dumps(fdata))
 
 
+
 def delExpense():
 
     with open("expenses.json", "r") as file:
         fdata = json.loads(file.read())
 
     for i in fdata:
-        if str(i['ID']) == id:
+        selected = tabela.focus()
+        temp = tabela.item(selected, 'values')
+        ID_szukane = temp[0]
+        if str(i['ID']) == ID_szukane:
             fdata.remove(i)
 
     with open("expenses.json", "w") as file:
         file.write(json.dumps(fdata))
 
 
+
+
+
 def findExpense():
-    pass
+    with open("expenses.json", "r") as file:
+        fdata = json.loads(file.read())
+
+    kwota = cena.get()
+    pora = data.get()
+
+    for i in fdata:
+        if str(i['Price']) == kwota or str(i['Date']) == pora:
+            print(i)
+
+
+
+
 
 with open("expenses.json", "r") as file:
     dane = json.loads(file.read())
 
-cols = ('ID', 'Cena', 'Data','Opis')
+
+
+
+
+
+cols = ('ID', 'Cena', 'Data', 'Opis')
 tabela = ttk.Treeview(root, columns=cols, show='headings')
+
 for col in cols:
     tabela.heading(col, text=col)
 tabela.grid(row=4, column=0, columnspan=21)
 
-
 for i in dane:
-   tabela.insert("", "end", values=(i["ID"], i["Price"], i["Date"], i["Description"]))
+    tabela.insert("", "end", values=(i["ID"], i["Price"], i["Date"], i["Description"]))
 
 
 #Przyciski
@@ -67,7 +91,7 @@ usun.grid(row=1,column=0)
 edytuj = Button(root, text="Zmień", padx=39,pady=20)
 edytuj.grid(row=2,column=0)
 
-znajdz = Button(root, text="Znajdz", padx=39,pady=20)
+znajdz = Button(root, text="Znajdz", command = findExpense, padx=39,pady=20)
 znajdz.grid(row=3,column=0)
 
 
