@@ -4,7 +4,7 @@ import json
 
 root = Tk()
 root.geometry('1000x500')
-root.title("Expenses Traker 9000")
+root.title("Stonks 9000")
 
 #Funkcje
 def addExpense():
@@ -15,16 +15,28 @@ def addExpense():
     if fdata is None:
         fdata = []
 
-    expenses = {
-        'ID': len(fdata)+1,
-        'Price': cena.get(),
-        'Date': data.get(),
-        'Description': opis.get()
-    }
+    try:
+        c = int(cena.get())
+        d = data.get()
+        o = str(opis.get())
 
-    fdata.append(expenses)
-    with open("expenses.json", "w") as file:
-        file.write(json.dumps(fdata))
+        expenses = {
+            'ID': len(fdata) + 1,
+            'Price': c,
+            'Date': d,
+            'Description': o
+        }
+
+        fdata.append(expenses)
+        with open("expenses.json", "w") as file:
+            file.write(json.dumps(fdata))
+
+    except ValueError:
+        win = Tk()
+        win.geometry('150x100')
+        win.title("Huh?")
+        huh = Label(win, text="Co ty robisz?!")
+        huh.grid()
 
 
 
@@ -39,6 +51,9 @@ def delExpense():
         ID_szukane = temp[0]
         if str(i['ID']) == ID_szukane:
             fdata.remove(i)
+        for x in fdata:                                         #<------------naprawić!!!!!!!!!!!!!!!!!!!!!!!!
+            fdata['ID'] = len(fdata) + 1
+
 
     with open("expenses.json", "w") as file:
         file.write(json.dumps(fdata))
@@ -110,11 +125,11 @@ d.grid(row=2, column= 2)
 cena = Entry(root, width = 50)
 cena.grid(row=0, column= 3, padx=10,pady=10)
 
-data = Entry(root, width= 50)
-data.grid(row=1, column= 3, padx=10,pady=10)
-
 opis = Entry(root, width = 50)
-opis.grid(row=2, column= 3, padx=10,pady=10)
+opis.grid(row=1, column= 3, padx=10,pady=10)
+
+data = Entry(root, width= 50)
+data.grid(row=2, column= 3, padx=10,pady=10)
 
 
 root.mainloop()
