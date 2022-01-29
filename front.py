@@ -54,12 +54,10 @@ def delExpense():
         ID_szukane = temp[0]
         if str(i['ID']) == ID_szukane:
             fdata.remove(i)
-
+            tabela.delete(selected)
 
     with open("expenses.json", "w") as file:
         file.write(json.dumps(fdata))
-
-
 
 
 
@@ -75,11 +73,6 @@ def findExpense():
 
 with open("expenses.json", "r") as file:
     dane = json.loads(file.read())
-
-
-
-
-
 
 cols = ('ID', 'Cena', 'Data', 'Opis')
 tabela = ttk.Treeview(root, columns=cols, show='headings')
