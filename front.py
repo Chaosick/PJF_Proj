@@ -1,5 +1,7 @@
 from tkinter import *
 from tkinter import ttk
+from tkcalendar import DateEntry
+from datetime import datetime
 import json
 
 root = Tk()
@@ -15,9 +17,12 @@ def addExpense():
     if fdata is None:
         fdata = []
 
+
+    dt=data.get_date()
+    str1=dt.strftime("%d-%m-%Y")
     try:
         c = int(cena.get())
-        d = data.get()
+        d = str1
         o = str(opis.get())
 
         expenses = {
@@ -33,11 +38,9 @@ def addExpense():
 
     except ValueError:
         win = Tk()
-        win.geometry('150x100')
+        win.geometry('250x50')
         win.title("Huh?")
-        huh = Label(win, text="Co ty robisz?!")
-        huh.grid()
-
+        huh = Label(win, text="Co ty robisz?!", font=('Calibri', 16) , anchor=CENTER).pack()
 
 
 def delExpense():
@@ -51,8 +54,6 @@ def delExpense():
         ID_szukane = temp[0]
         if str(i['ID']) == ID_szukane:
             fdata.remove(i)
-        for x in fdata:                                         #<------------naprawić!!!!!!!!!!!!!!!!!!!!!!!!
-            fdata['ID'] = len(fdata) + 1
 
 
     with open("expenses.json", "w") as file:
@@ -66,12 +67,7 @@ def findExpense():
     with open("expenses.json", "r") as file:
         fdata = json.loads(file.read())
 
-    kwota = cena.get()
-    pora = data.get()
 
-    for i in fdata:
-        if str(i['Price']) == kwota or str(i['Date']) == pora:
-            print(i)
 
 
 
@@ -128,8 +124,9 @@ cena.grid(row=0, column= 3, padx=10,pady=10)
 opis = Entry(root, width = 50)
 opis.grid(row=1, column= 3, padx=10,pady=10)
 
-data = Entry(root, width= 50)
-data.grid(row=2, column= 3, padx=10,pady=10)
+date_today = datetime.now()
+data = DateEntry(root, selectmode='day', maxdate=date_today)
+data.grid(row=2, column= 3)
 
 
 root.mainloop()
