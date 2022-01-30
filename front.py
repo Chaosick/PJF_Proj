@@ -2,6 +2,7 @@ from tkinter import *
 from tkinter import ttk
 from tkcalendar import DateEntry
 from datetime import datetime
+import numpy as np
 import matplotlib.pyplot as plt
 import json
 
@@ -140,11 +141,22 @@ def graphCreate():
 
     with open("expenses.json", "r") as file:
         fdata = json.loads(file.read())
+    
+    sum=0
+    iter = 0
+    wartosc = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+    while iter <= 12:
+        for i in fdata:
+            if str(i['Date'][3:5]) == str(iter).zfill(2):
+                wartosc[iter] += i['Price']
+        iter+=1
 
-    for i in fdata:
-        if(i['Date'][3:5]):
-            sum = i['Price']
-            print(sum)
+    dni=np.arange(0,13)
+    plt.title("Wykres wydatków")
+    plt.xlabel("Miesiące")
+    plt.ylabel("Kwota")
+    plt.plot(dni,wartosc,marker = "o",color="green")
+    plt.show()
 #=================================================================================================================
 
 with open("expenses.json", "r") as file:
