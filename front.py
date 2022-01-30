@@ -2,10 +2,11 @@ from tkinter import *
 from tkinter import ttk
 from tkcalendar import DateEntry
 from datetime import datetime
+import matplotlib.pyplot as plt
 import json
 
 root = Tk()
-root.geometry('1000x500')
+root.geometry('800x550')
 root.title("Stonks 9000")
 
 #Funkcje
@@ -62,9 +63,6 @@ def delExpense():
             fdata.remove(i)
             tabela.delete(selected)
 
-    for i in dane:
-        tabela.insert("", "end", values=(i["ID"], i["Price"], i["Date"], i["Description"]))
-
     with open("expenses.json", "w") as file:
         file.write(json.dumps(fdata))
 
@@ -72,6 +70,10 @@ def delExpense():
 def findExpense():
     with open("expenses.json", "r") as file:
         fdata = json.loads(file.read())
+
+    dt=data.get_date()
+    str1=dt.strftime("%d-%m-%Y")
+
 
     win1 = Tk()
     win1.geometry('800x200')
@@ -83,53 +85,66 @@ def findExpense():
         find_tabela.heading(col, text=col)
     find_tabela.grid(row=0, column=0)
 
-    dt=data.get_date()
-    str1=dt.strftime("%d-%m-%Y")
-
     for i in fdata:
         if str(i['Date']) == str1:
             find_tabela.insert(parent='', index='end', values=(i["ID"], i["Price"], i["Date"], i["Description"]))
 
 
 def editExpense():
+
+    try:
+        cena.delete(0, END)
+        opis.delete(0, END)
+
+        selected = tabela.focus()
+        info = tabela.item(selected, 'values')
+
+        cena.insert(0,info[1])
+        opis.insert(0,info[3])
+
+        zatwierdz["state"] = NORMAL
+
+    except IndexError:
+        win = Tk()
+        win.geometry('250x50')
+        win.title("Huh?")
+        huh = Label(win, text="Co ty robisz?!", font=('Calibri', 16) , anchor=CENTER).pack()
+
+
+def zapisz():
     with open("expenses.json", "r") as file:
         fdata = json.loads(file.read())
 
-    win2 = Tk()
-    win2.geometry('400x150')
-    win2.title("Huh?")
+    dt = data.get_date()
+    str1 = dt.strftime("%d-%m-%Y")
 
-    def zapisz():
-        with open("expenses.json", "r") as file:
-            fdata = json.loads(file.read())
-
-        with open("expenses.json", "w") as file:
-            file.write(json.dumps(fdata))
-
-    cena_zmiana = Entry(win2, width=40).grid(row=0, column=1, padx=10, pady=10)
-
-    opis_zmiana = Entry(win2, width=40).grid(row=1, column=1, padx=10, pady=10)
-
-    date_max = datetime.now()
-    data_zmiana = DateEntry(win2, selectmode='day', maxdate=date_max).grid(row=2, column=1)
-
-    c = Label(win2, text="Wartość").grid(row=0, column=0)
-
-    o = Label(win2, text="Opis").grid(row=1, column=0)
-
-    d = Label(win2, text="Data").grid(row=2, column=0)
-
-    zatwierdz = Button(win2, text="Zatwierdz",command = zapisz, padx=10,pady=10).grid(row=3, column=2, columnspan=3)
-
-
+    selected = tabela.focus()
+    values = tabela.item(selected, 'values')
+    ID_szukane = values[0]
 
     for i in fdata:
-        selected = tabela.focus()
-        values = tabela.item(selected, 'values')
+       if str(i['ID']) == ID_szukane:
+           i['Price'] = cena.get()
+           i['Description'] = opis.get()
+           i['Date'] = str1
+
+    cena.delete(0, END)
+    opis.delete(0, END)
+    zatwierdz["state"] = DISABLED
+
+    with open("expenses.json", "w") as file:
+       file.write(json.dumps(fdata))
 
 
+def graphCreate():
 
+    with open("expenses.json", "r") as file:
+        fdata = json.loads(file.read())
 
+    for i in fdata:
+        if(i['Date'][3:5]):
+            sum = i['Price']
+            print(sum)
 #=================================================================================================================
 
 with open("expenses.json", "r") as file:
@@ -154,34 +169,40 @@ dodaj.grid(row=0,column=0)
 usun = Button(root, text="Usuń",command = delExpense, padx=42,pady=20)
 usun.grid(row=1,column=0)
 
-edytuj = Button(root, text="Zmień", command = editExpense, padx=39,pady=20)
-edytuj.grid(row=2,column=0)
+znajdz = Button(root, text="Znajdz", command = findExpense, padx=38,pady=20)
+znajdz.grid(row=2,column=0)
 
-znajdz = Button(root, text="Znajdz", command = findExpense, padx=39,pady=20)
-znajdz.grid(row=3,column=0)
+edytuj = Button(root, text="Zmień", command = editExpense, padx=39,pady=20)
+edytuj.grid(row=3,column=0)
+
+zatwierdz = Button(root, text="Zatwierdz",state = DISABLED, command = zapisz, padx=40, pady=20)
+zatwierdz.grid(row=3, column=1)
+
+wykres = Button(root, text="Wykres", command = graphCreate, padx = 100, pady = 20)
+wykres.grid(row=5, column = 0, columnspan = 20)
 
 
 #Text
 c = Label(root,text = "Wartość")
-c.grid(row=0, column= 2)
+c.grid(row=0, column= 1)
 
 o = Label(root,text = "Opis")
-o.grid(row=1, column= 2)
+o.grid(row=1, column= 1)
 
 d = Label(root,text = "Data")
-d.grid(row=2, column= 2)
+d.grid(row=2, column= 1)
 
 
 #Pola do wpisywania
 cena = Entry(root, width = 50)
-cena.grid(row=0, column= 3, padx=10,pady=10)
+cena.grid(row=0, column= 2, padx=10,pady=10)
 
 opis = Entry(root, width = 50)
-opis.grid(row=1, column= 3, padx=10,pady=10)
+opis.grid(row=1, column= 2, padx=10,pady=10)
 
 date_today = datetime.now()
 data = DateEntry(root, selectmode='day', maxdate=date_today)
-data.grid(row=2, column= 3)
+data.grid(row=2, column= 2)
 
 
 root.mainloop()
