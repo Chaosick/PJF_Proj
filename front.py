@@ -23,19 +23,20 @@ def addExpense():
     str1=dt.strftime("%d-%m-%Y")
     try:
         c = float(cena.get())
+        cn = "%.2f" % c
         d = str1
         o = str(opis.get())
         i = len(fdata)+1
 
         expenses = {
             'ID': i,
-            'Price': c,
+            'Price': cn,
             'Date': d,
             'Description': o
         }
 
         fdata.append(expenses)
-        tabela.insert(parent='', index='end', values=(i,c,d,o))
+        tabela.insert(parent='', index='end', values=(i,cn,d,o))
 
         cena.delete(0, END)
         opis.delete(0, END)
@@ -64,8 +65,27 @@ def delExpense():
             fdata.remove(i)
             tabela.delete(selected)
 
+    x=1
+    while x <= len(fdata):
+        for j in fdata:
+            j['ID']=x
+            x+=1
+
     with open("expenses.json", "w") as file:
         file.write(json.dumps(fdata))
+
+    refresh()
+
+def refresh():
+    with open("expenses.json", "r") as file:
+        fdata = json.loads(file.read())
+
+    for td in tabela.get_children():
+        tabela.delete(td)
+
+    for n in fdata:
+        tabela.insert("", "end", values=(n["ID"], n["Price"], n["Date"], n["Description"]))
+
 
 
 def findExpense():
@@ -122,33 +142,43 @@ def zapisz():
     selected = tabela.focus()
     values = tabela.item(selected, 'values')
     ID_szukane = values[0]
+    try:
+        ncena = float(cena.get())
+        xD = "%.2f" % ncena
+        for i in fdata:
+           if str(i['ID']) == ID_szukane:
+               i['Price'] = xD
+               i['Description'] = str(opis.get())
+               i['Date'] = str1
 
-    for i in fdata:
-       if str(i['ID']) == ID_szukane:
-           i['Price'] = cena.get()
-           i['Description'] = opis.get()
-           i['Date'] = str1
+        cena.delete(0, END)
+        opis.delete(0, END)
+        zatwierdz["state"] = DISABLED
 
-    cena.delete(0, END)
-    opis.delete(0, END)
-    zatwierdz["state"] = DISABLED
+        with open("expenses.json", "w") as file:
+           file.write(json.dumps(fdata))
 
-    with open("expenses.json", "w") as file:
-       file.write(json.dumps(fdata))
+    except ValueError:
+        win = Tk()
+        win.geometry('250x50')
+        win.title("Huh?")
+        huh = Label(win, text="Co ty robisz?!", font=('Calibri', 16) , anchor=CENTER).pack()
+
+    refresh()
 
 
 def graphCreate():
 
     with open("expenses.json", "r") as file:
         fdata = json.loads(file.read())
-    
+
     sum=0
     iter = 0
     wartosc = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
     while iter <= 12:
         for i in fdata:
             if str(i['Date'][3:5]) == str(iter).zfill(2):
-                wartosc[iter] += i['Price']
+                wartosc[iter] += float(i['Price'])
         iter+=1
 
     dni=np.arange(0,13)
@@ -157,6 +187,7 @@ def graphCreate():
     plt.ylabel("Kwota")
     plt.plot(dni,wartosc,marker = "o",color="green")
     plt.show()
+
 #=================================================================================================================
 
 with open("expenses.json", "r") as file:
